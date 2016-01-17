@@ -5,7 +5,7 @@ metadata:
     name: jts3servermod
     version: v1
   name: jts3servermod-v1
-  namespace: default  
+  namespace: default
 spec:
   replicas: 1
   selector:

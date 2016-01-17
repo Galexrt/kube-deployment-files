@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: jts3servermod
+    version: v1
+  name: jts3servermod-v1
+  namespace: default  
+spec:
+  replicas: 1
+  selector:
+    name: jts3servermod
+    version: v1
+  template:
+    metadata:
+      labels:
+        name: jts3servermod
+        version: v1
+    spec:
+      containers:
+      - image: galexrt/jts3servermod:latest
+        name: jts3servermod
+        resources:
+          limits:
+            cpu: 15m
+            memory: 256Mi
+        volumeMounts:
+        - mountPath: /opt/jts3servermod/config
+          name: jts3servermod-config-storage
+      volumes:
+      - hostPath:
+          path: /mnt/gluster/container-data/uberdogenetwork-live/jts3servermod/opt-jts3servermod-config
+        name: jts3servermod-config-storage

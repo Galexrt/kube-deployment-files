@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    name: pen
+    version: v1
+  name: pen-v1
+  namespace: default
+spec:
+  containers:
+  - args:
+    - -C 1111
+    - 0.0.0.0:OUTSIDE_PORT
+    - ADDRESS:PORT
+    image: quay.io/galexrt/pen:latest
+    name: pen
+    ports:
+    - containerPort: OUTSIDE_PORT
+      hostPort: OUTSIDE_PORT
+      name: pen-PORT_NAME
+      protocol: TCP
+    resources:
+      limits:
+        cpu: 50m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 256Mi

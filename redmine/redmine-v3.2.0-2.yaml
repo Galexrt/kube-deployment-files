@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: redmine
+    version: v3.2.0-2
+  name: redmine-v3.2.0-2
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    name: redmine
+    version: v3.2.0-2
+  template:
+    metadata:
+      labels:
+        name: redmine
+        version: v3.2.0-2
+    spec:
+      containers:
+      - image: quay.io/sameersbn/memcached:latest
+        name: memcache
+        ports:
+        - containerPort: 11211
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 75m
+            memory: 512Mi
+      - env:
+        - name: REDMINE_HTTPS
+          value: "true"
+        - name: REDMINE_PORT
+          value: "80"
+        - name: NGINX_MAX_UPLOAD_SIZE
+          value: "25m"
+        - name: MEMCACHE_HOST
+          value: 127.0.0.1
+        - name: MEMCACHE_PORT
+          value: "11211"
+        - name: SMTP_ENABLED
+          value: "true"
+        - name: SMTP_DOMAIN
+          value: "redmine.example.com
+        - name: SMTP_HOST
+          value: "smtp.example.com"
+        - name: SMTP_AUTHENTICATION
+          value: ":plain"
+        - name: SMTP_TLS
+          value: "false"
+        - name: SMTP_STARTTLS
+          value: "true"
+        - name: SMTP_USER
+          value: "redmine@example.com"
+        - name: SMTP_PASS
+          value: "YOUR_SMTP_PASSWORD"
+        - name: DB_TYPE
+          value: "mysql"
+        - name: DB_HOST
+          value: "pxc-cluster"
+        - name: DB_USER
+          value: "redmine"
+        - name: DB_PASS
+          value: "YOUR_PASSWORD"
+        - name: DB_NAME
+          value: redmine_production
+        - name: DB_POOL
+          value: "10"
+        image: quay.io/sameersbn/redmine:3.2.0-2
+        name: redmine
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+        volumeMounts:
+        - mountPath: /home/redmine/data
+          name: redmine-storage
+      volumes:
+      - hostPath:
+          path: /srv/docker/redmine
+        name: redmine-storage

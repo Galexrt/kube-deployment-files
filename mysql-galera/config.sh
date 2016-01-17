@@ -1,0 +1,7 @@
+NUM_NODES=3
+MYSQL_PASSWORD=""
+MYSQL_ROOT_PASSWORD=""
+SST_USER="sst"
+SST_PASSWORD=""
+
+VOLUME_PATH="/srv/docker/database"

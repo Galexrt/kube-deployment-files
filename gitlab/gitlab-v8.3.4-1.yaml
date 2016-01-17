@@ -1,0 +1,133 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: gitlab
+    version: v8.3.4-1
+  name: gitlab-v8.3.4-1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    name: gitlab
+    version: v8.3.4-1
+  template:
+    metadata:
+      labels:
+        name: gitlab
+        version: v8.3.4-1
+    spec:
+      containers:
+      - image: docker.io/sameersbn/redis:latest
+        livenessProbe:
+          initialDelaySeconds: 30
+          tcpSocket:
+            port: 6379
+          timeoutSeconds: 6
+        name: redis
+        ports:
+        - containerPort: 6379
+          name: redis
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 75m
+        volumeMounts:
+        - mountPath: /var/lib/redis
+          name: redis-storage
+      - env:
+        - name: GITLAB_HOST
+          value: "gitlab.example.com"
+        - name: GITLAB_PORT
+          value: "443"
+        - name: GITLAB_SSH_PORT
+          value: "10022"
+        - name: GITLAB_BACKUPS
+          value: "daily"
+        - name: GITLAB_TIMEZONE
+          value: "UTC"
+        - name: GITLAB_HTTPS
+          value: "true"
+        - name: GITLAB_HTTPS_ONLY
+          value: "false"
+        - name: GITLAB_EMAIL
+          value: "gitlab@example.com"
+        - name: GITLAB_EMAIL_DISPLAY_NAME
+          value: YOUR_NAME GitLab"
+        - name: GITLAB_EMAIL_REPLY_TO
+          value: "gitlab@example.com"
+        - name: NGINX_MAX_UPLOAD_SIZE
+          value: 25m
+        - name: SSL_SELF_SIGNED
+          value: "true"
+        - name: GOOGLE_ANALYTICS_ID
+          value: YOUR_GOOGLE_ANALYTICS_ID
+        - name: OAUTH_ENABLED
+          value: "true"
+        - name: OAUTH_GOOGLE_API_KEY
+          value: "YOUR_GOOGLE_API_KEY"
+        - name: OAUTH_GOOGLE_APP_SECRET
+          value: "YOUR_GOOGLE_APP_SECRET"
+        - name: OAUTH_GITHUB_API_KEY
+          value: "YOUR_GITHUB_API_KEY"
+        - name: OAUTH_GITHUB_APP_SECRET
+          value: "YOUR_GITHUB_APP_SECRET"
+        - name: SMTP_ENABLED
+          value: "true"
+        - name: SMTP_DOMAIN
+          value: "gitlab.example.com"
+        - name: SMTP_HOST
+          value: "smtp.example.com"
+        - name: SMTP_STARTTLS
+          value: "true"
+        - name: SMTP_USER
+          value: "gitlab@example.com"
+        - name: SMTP_PASS
+          value: "YOUR_SMTP_USER_PASSWORD
+        - name: GITLAB_SECRETS_DB_KEY_BASE
+          value: "YOUR_GITLAB_SECRETS_DB_KEY"
+        - name: DB_TYPE
+          value: "mysql"
+        - name: DB_HOST
+          value: "pxc-cluster"
+        - name: DB_USER
+          value: "gitlab"
+        - name: DB_PASS
+          value: "GITLAB_DB_PASSWORD"
+        - name: DB_NAME
+          value: "gitlabhq_production"
+        - name: DB_POOL
+          value: "12"
+        - name: REDIS_HOST
+          value: "127.0.0.1"
+        - name: REDIS_PORT
+          value: "6379"
+        image: docker.io/sameersbn/gitlab:8.3.4-1
+        livenessProbe:
+          httpGet:
+            path: /users/sign_in
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 120
+          timeoutSeconds: 6
+        name: gitlab
+        ports:
+        - containerPort: 22
+          name: ssh
+          protocol: TCP
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 220m
+            memory: 1536Mi
+        volumeMounts:
+        - mountPath: /home/git/data
+          name: gitlab-storage
+      volumes:
+      - emptyDir: {}
+        name: redis-storage
+      - hostPath:
+          path: /mnt/gluster/container-data/zerbytesnet-live/gitlab/gitlab
+        name: gitlab-storage

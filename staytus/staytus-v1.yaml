@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: staytus
+    version: v1
+  name: staytus-v1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    name: staytus
+    version: v1
+  template:
+    metadata:
+      labels:
+        name: staytus
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: DB_USER
+          value: "YOUR_DB_USER"
+        - name: DB_PASSWORD
+          value: "YOUR_DB_PASSWORD"
+        - name: DB_DATABASE
+          value: "YOUR_DATAbASE"
+        - name: DB_HOST
+          value: "pxc-cluster"
+        - name: DB_POOL
+          value: "10"
+        - name: STAYTUS_SMTP_HOSTNAME
+          value: "smtp.example.com"
+        - name: STAYTUS_SMTP_USERNAME
+          value: "staytus@example.com"
+        - name: STAYTUS_SMTP_PASSWORD
+          value: "YOUR_SMTP_PASSWORD"
+        image: quay.io/galexrt/staytus:latest
+        name: staytus
+        ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 75m
+            memory: 512Mi

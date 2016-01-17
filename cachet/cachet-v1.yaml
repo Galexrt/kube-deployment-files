@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: cachet
+    version: v1
+  name: cachet-v1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    name: cachet
+    version: v1
+  template:
+    metadata:
+      labels:
+        name: cachet
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: DB_USERNAME
+          value: cachet
+        - name: DB_PASSWORD
+          value: CACHET_USER_DB_PASSWORD
+        - name: DB_DATABASE
+          value: cachet
+        - name: DB_HOST
+          value: pxc-cluster
+        image: cachethq/docker:latest
+        name: cachet
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 75m
+            memory: 256Mi
+      volumes:
+      - emptyDir: {}
+        name: redis-storage

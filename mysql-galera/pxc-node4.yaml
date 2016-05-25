@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pxc-node3
+  name: pxc-node4
 spec:
   ports:
     - port: 3306
@@ -13,24 +13,24 @@ spec:
     - port: 4568
       name: incremental-state-transfer 
   selector:
-    node: pxc-node3
+    node: pxc-node4
 ---
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: pxc-node3
+  name: pxc-node4
   labels:
-    node: pxc-node3
+    node: pxc-node4
     unit: pxc-cluster
 spec:
   replicas: 1
   selector:
-    node: pxc-node3
+    node: pxc-node4
     unit: pxc-cluster
   template:
     metadata:
       labels:
-        node: pxc-node3
+        node: pxc-node4
         unit: pxc-cluster
     spec:
       containers:
@@ -72,5 +72,5 @@ spec:
           name: mysql-storage
       volumes:
       - hostPath:
-          path: "/mnt/data/docker/mysql-galera/node3"
+          path: "/mnt/data/docker/mysql-galera/node4"
         name: mysql-storage

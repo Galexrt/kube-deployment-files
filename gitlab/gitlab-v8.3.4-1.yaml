@@ -83,7 +83,7 @@ spec:
         - name: SMTP_USER
           value: "gitlab@example.com"
         - name: SMTP_PASS
-          value: "YOUR_SMTP_USER_PASSWORD
+          value: "YOUR_SMTP_USER_PASSWORD"
         - name: GITLAB_SECRETS_DB_KEY_BASE
           value: "YOUR_GITLAB_SECRETS_DB_KEY"
         - name: DB_TYPE

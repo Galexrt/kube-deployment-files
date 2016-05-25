@@ -17,9 +17,10 @@ for i in $(seq 1 $NUM_NODES); do
     cat <<EOF > "pxc-node$i.yaml"
 apiVersion: v1
 kind: Service
-id: pxc-node1
 metadata:
-  name: pxc-node1
+  name: pxc-node$i
+  labels:
+    node: pxc-node$i
 spec:
   ports:
     - port: 3306
@@ -31,18 +32,15 @@ spec:
     - port: 4568
       name: incremental-state-transfer 
   selector:
-    node: pxc-node1 
-labels: 
-  node: pxc-node1
+    node: pxc-node$i
 ---
 apiVersion: v1
 kind: ReplicationController
 metadata:
+  name: pxc-node$i
   labels:
     node: pxc-node$i
     unit: pxc-cluster
-  name: pxc-node$i
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -71,9 +69,9 @@ spec:
         - name: MYSQL_USER
           value: "mysql"
         - name: MYSQL_PASSWORD
-          value: "$MYSQL_PASSWORD="""
+          value: "$MYSQL_PASSWORD"
         - name: MYSQL_ROOT_PASSWORD
-          value: "$MYSQL_ROOT_PASSWORD="""
+          value: "$MYSQL_ROOT_PASSWORD"
         image: capttofu/percona_xtradb_cluster_5_6:beta
         name: pxc-node1
         ports:
@@ -87,14 +85,13 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: 110m
-            memory: 768Mi
+            memory: 1536Mi
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: mysql-storage
       volumes:
       - hostPath:
-          path: /srv/docker/database/node$i
+          path: "$VOLUME_PATH/node$i"
         name: mysql-storage
 EOF
 done

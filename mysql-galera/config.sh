@@ -1,7 +1,7 @@
-NUM_NODES=3
+NUM_NODES=5
 MYSQL_PASSWORD=""
 MYSQL_ROOT_PASSWORD=""
 SST_USER="sst"
 SST_PASSWORD=""
 
-VOLUME_PATH="/srv/docker/database"
+VOLUME_PATH="/mnt/data/docker/mysql-galera"

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ts3server
+  labels:
+    name: ts3server
+spec:
+  hostNetwork: true
+  restartPolicy: Always
+  containers:
+    - name: ts3server
+      image: quay.io/galexrt/ts3server:latest
+      ports:
+      - containerPort: 11011
+        name: query
+        protocol: TCP
+      volumeMounts:
+      - name: ts3server-storage
+        mountPath: /data
+  volumes:
+    - name: ts3server-storage
+      rbd:
+        monitors:
+          - "[::1]:6789"
+        pool: rbd
+        image: ts3server_1
+        user: admin
+        secretRef:
+          name: ceph-secret
+        fsType: xfs
+        readOnly: false

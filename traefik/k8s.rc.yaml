@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  namespace: loadbalancer
+  name: traefik-v1
+  labels:
+    version: 1
+spec:
+  replicas: 1
+  selector:
+    name: traefik
+  template:
+    metadata:
+      labels:
+        name: traefik
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - image: traefik
+        name: traefik-ingress-lb
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          hostPort: 80
+        - containerPort: 443
+          hostPort: 443
+        - containerPort: 8080
+        args:
+        - --web
+        - --logLevel=DEBUG
+        volumeMounts:
+          - mountPath: /etc/traefik/traefik.toml
+            name: traefik-config
+          - mountPath: /etc/traefik/certs
+            name: traefik-certs
+      volumes:
+        - hostPath:
+            path: /opt/kubernetes/kube-system/traefik-ingress-lb/traefik.toml
+          name: traefik-config
+        - hostPath:
+            path: /opt/kubernetes/kube-system/traefik-ingress-lb/certs/
+          name: traefik-certs

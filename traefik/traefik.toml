@@ -1,0 +1,36 @@
+logLevel = "INFO"
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/etc/traefik/certs/traefik.crt"
+      keyFile = "/etc/traefik/certs/traefik.key"
+
+[acme]
+email = "user@example.com"
+storageFile = "/etc/traefik/certs/acme.json"
+#caServer = "https://acme-staging.api.letsencrypt.org/directory"
+onDemand = true
+entryPoint = "http"
+
+[[acme.domains]]
+main = "example.com"
+
+[file]
+[backends]
+  [backends.zabbix-backend]
+    [backends.zabbix-backend.servers.server1]
+    url = "http://zabbix-web.zabbix:80"
+
+[frontends]
+  [frontends.zabbix-frontend]
+  entrypoints = ["http", "https"]
+  backend = "zabbix-backend"
+    [frontends.zabbix-frontend.routes.all_1]
+    rule = "Host:example.com"
